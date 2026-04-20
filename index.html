@@ -8,14 +8,14 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.5s ease-in; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         #question-area { min-height: 200px; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-8">
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 border-t-4 border-blue-600">
     <div id="app" class="max-w-3xl mx-auto">
-        <header class="bg-white rounded-2xl shadow-sm p-6 mb-8 border border-slate-200">
+        <header class="bg-white rounded-2xl shadow-sm p-6 mb-6 border border-slate-200">
             <h1 class="text-2xl font-bold text-slate-800">ET-Trainer für SHK-Berufe</h1>
             <p class="text-slate-500 mt-1">Leistung, Energie, Leiterwiderstand & Trinkwassererwärmung</p>
             <div id="progress-bar-container" class="mt-4 bg-slate-100 h-2 rounded-full overflow-hidden">
@@ -23,14 +23,27 @@
             </div>
         </header>
 
-        <div id="quiz-container" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-slate-200 min-h-[400px]">
-            <div id="question-area" class="fade-in">
+        <div id="quiz-container" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-slate-200 min-h-[450px] relative">
+            <div id="question-area" class="fade-in mb-12">
                 <p class="text-slate-500">Lade Lerninhalte...</p>
+            </div>
+
+            <!-- Navigations-Leiste -->
+            <div id="nav-controls" class="absolute bottom-6 left-6 right-6 flex justify-between items-center border-t border-slate-100 pt-4 bg-white">
+                <button onclick="prevQuestion()" id="btn-prev" class="flex items-center text-slate-500 hover:text-blue-600 font-bold transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    Zurück
+                </button>
+                <div class="text-slate-400 text-xs font-mono" id="nav-indicator">1 / 20</div>
+                <button onclick="nextQuestion()" id="btn-next" class="flex items-center text-slate-500 hover:text-blue-600 font-bold transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                    Vor
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
             </div>
         </div>
 
         <div class="mt-6 flex justify-between items-center text-sm text-slate-500 font-medium px-2">
-            <span id="question-counter">Frage 1 von 20</span>
+            <span id="question-counter">Aufgabe 1 von 20</span>
             <span id="score-display">Punkte: 0</span>
         </div>
     </div>
@@ -61,7 +74,7 @@
             {
                 type: "calculation",
                 topic: "Energie",
-                text: "Eine kleine Zirkulationspumpe (20 W) läuft im Dauerbetrieb 24 Stunden am Tag. Wie viel Energie in Wh verbraucht sie täglich?",
+                text: "Eine kleine Zirkulationspumpe (20 W) läuft im Dauerbetrieb 24 Stunden am Tag. Wie viel Energie verbraucht sie täglich?",
                 options: ["480 Wh", "20 Wh", "0,83 Wh", "240 Wh"],
                 correct: 0,
                 explanation: "Rechnung: 20 W · 24 h = 480 Wh (entspricht 0,48 kWh)."
@@ -77,7 +90,7 @@
             {
                 type: "theory",
                 topic: "Leistung",
-                text: "In einer Kundenanlage wird die Spannung von 230 V auf 400 V (Drehstrom-Anschluss für Durchlauferhitzer) erhöht. Welchen Einfluss hat die Spannung bei gleichem Widerstand auf die Leistung?",
+                text: "In einer Kundenanlage wird die Spannung für einen Durchlauferhitzer erhöht. Welchen Einfluss hat die Spannung bei gleichem Widerstand auf die Leistung?",
                 options: [
                     "Die Leistung bleibt gleich.",
                     "Die Leistung steigt linear mit der Spannung.",
@@ -111,7 +124,7 @@
             {
                 type: "calculation",
                 topic: "Leiterwiderstand",
-                text: "Ein Monteur misst an einer 100m langen Rolle NYM-J Leitung (Aluminium, ρ = 0,028) einen Widerstand von 1,12 Ω. Welchen Querschnitt hat die Ader?",
+                text: "Ein Monteur misst an einer 100m langen Rolle Leitung (Aluminium, ρ = 0,028) einen Widerstand von 1,12 Ω. Welchen Querschnitt hat die Ader?",
                 options: ["1,5 mm²", "2,5 mm²", "4,0 mm²", "6,0 mm²"],
                 correct: 1,
                 explanation: "Formel: A = (ρ · l) / R. Rechnung: (0,028 · 100) / 1,12 = 2,5 mm²."
@@ -119,39 +132,39 @@
             {
                 type: "calculation",
                 topic: "Elektrowärme",
-                text: "Ein Elektro-Warmwasserspeicher mit 2000 W ist 1 Stunde lang aufgeheizt worden. Wie viel Wärmemenge Q in kJ hat er abgegeben (η = 100%)?",
-                options: ["2000 kJ", "3600 kJ", "7200 kJ", "120 kJ"],
-                correct: 2,
-                explanation: "Formel: Q = P · t. t = 3600 s. Rechnung: 2000 W · 3600 s = 7.200.000 J = 7200 kJ."
+                text: "Ein Elektro-Warmwasserspeicher mit 2000 W ist 1 Stunde lang aufgeheizt worden. Wie viel Wärmeenergie hat er abgegeben (η = 100%)?",
+                options: ["2000 Wh (2 kWh)", "3600 Wh", "7,2 kWh", "120 Wh"],
+                correct: 0,
+                explanation: "Formel: W = P · t. Rechnung: 2000 W · 1 h = 2000 Wh = 2 kWh."
             },
             {
                 type: "theory",
                 topic: "Elektrowärme",
-                text: "Was bedeutet die 'Spezifische Wärmekapazität von Wasser' (c = 4,187 kJ/(kg·K)) für die SHK-Praxis?",
+                text: "Wie viel Energie (in Wh) benötigt man etwa, um 1 Liter Wasser um 1 Grad (1 K) zu erwärmen? (Hinweis: 1,16 Wh entsprechen ca. 4,187 kJ)",
                 options: [
-                    "Dass Wasser 4,187 kJ benötigt, um 1 Liter um 1 Grad zu erwärmen.",
-                    "Den Siedepunkt von Wasser bei Normaldruck.",
-                    "Den Druckverlust in der Leitung.",
-                    "Die Stromleitfähigkeit von Trinkwasser."
+                    "1,16 Wh",
+                    "4,187 Wh",
+                    "100 Wh",
+                    "0,5 Wh"
                 ],
                 correct: 0,
-                explanation: "Dieser Wert gibt an, wie viel Energie (Wärmemenge) man aufwenden muss, um die Temperatur des Wassers zu erhöhen."
+                explanation: "In der SHK-Praxis rechnet man oft mit der Konstante 1,16 Wh/(kg·K) anstatt kJ, um direkt die elektrische Arbeit zu erhalten."
             },
             {
                 type: "calculation",
                 topic: "Elektrowärme",
-                text: "Wie viel Wärmemenge Q wird benötigt, um 10 kg (10 Liter) Wasser von 10°C auf 50°C zu erwärmen? (c = 4,187 kJ/(kg·K))",
-                options: ["167,48 kJ", "1674,8 kJ", "418,7 kJ", "1000 kJ"],
-                correct: 1,
-                explanation: "Δϑ = 40 K (Unterschied). Rechnung: 10 kg · 4,187 · 40 K = 1674,8 kJ."
+                text: "Wie viel Energie wird benötigt, um 10 Liter Wasser von 10°C auf 50°C zu erwärmen? (Rechne mit c = 1,16 Wh/(kg·K))",
+                options: ["464 Wh", "116 Wh", "11,6 Wh", "46,4 Wh"],
+                correct: 0,
+                explanation: "Rechnung: Masse (10 kg) · c (1,16 Wh/kgK) · Temperaturdifferenz (40 K) = 464 Wh."
             },
             {
                 type: "calculation",
                 topic: "Mischaufgabe",
-                text: "Ein Heizlüfter im Baustellenwagen hat 2300 W und läuft an 230 V. Wie hoch muss die Absicherung mindestens sein?",
+                text: "Ein Heizlüfter im Baustellenwagen hat 2300 W und läuft an 230 V. Wie hoch ist die Stromaufnahme?",
                 options: ["6 A", "10 A", "16 A", "20 A"],
                 correct: 1,
-                explanation: "I = P / U. Rechnung: 2300 W / 230 V = 10 A. Eine 10A Sicherung reicht gerade so, üblich sind 16A."
+                explanation: "I = P / U. Rechnung: 2300 W / 230 V = 10 A."
             },
             {
                 type: "theory",
@@ -169,7 +182,7 @@
             {
                 type: "calculation",
                 topic: "Leistung",
-                text: "Eine Wärmepumpe hat eine Leistungsaufnahme von 3 kW. Wie viel Strom I fließt bei 400 V (vereinfacht als einphasige Last gerechnet)?",
+                text: "Eine Wärmepumpe hat eine Leistungsaufnahme von 3 kW. Wie viel Strom I fließt bei 400 V (einphasig betrachtet)?",
                 options: ["7,5 A", "13 A", "1,2 A", "12 A"],
                 correct: 0,
                 explanation: "I = P / U. Rechnung: 3000 W / 400 V = 7,5 A."
@@ -177,20 +190,20 @@
             {
                 type: "theory",
                 topic: "Elektrowärme",
-                text: "Was passiert in einem geschlossenen Warmwasserspeicher, wenn das Sicherheitsventil defekt ist und der Thermostat nicht abschaltet?",
+                text: "Warum ist ein funktionierendes Sicherheitsventil bei elektrischen Speichern lebenswichtig?",
                 options: [
-                    "Nichts, der Speicher ist stabil.",
-                    "Die elektrische Sicherung löst immer aus.",
-                    "Der Druck steigt durch Volumenausdehnung gefährlich an (Explosionsgefahr).",
-                    "Das Wasser wird zu Dampf und verschwindet."
+                    "Es spart Strom.",
+                    "Es verhindert den Überdruck durch die Volumenänderung bei Erwärmung.",
+                    "Es kühlt den Heizstab.",
+                    "Es misst die Wassertemperatur."
                 ],
-                correct: 2,
-                explanation: "Die elektrische Energie wird ununterbrochen in Wärme umgewandelt. Ohne Druckausgleich (Ventil) steigt der Druck massiv an."
+                correct: 1,
+                explanation: "Wasser dehnt sich beim Erwärmen aus. Da die elektrische Heizung (Energie) den Druck massiv erhöhen kann, muss das Ventil den Überdruck ablassen."
             },
             {
                 type: "calculation",
                 topic: "Arbeit",
-                text: "Ein elektrischer Handtuchheizkörper hat 500 W. Er läuft 4 Stunden am Tag. Wie viel kostet der Betrieb pro Tag bei 0,40 €/kWh?",
+                text: "Ein Handtuchheizkörper (500 W) läuft 4 Stunden am Tag. Wie viel kostet der Betrieb pro Tag bei 0,40 €/kWh?",
                 options: ["0,20 €", "0,80 €", "2,00 €", "1,20 €"],
                 correct: 1,
                 explanation: "1. Arbeit: 0,5 kW · 4 h = 2 kWh. 2. Kosten: 2 kWh · 0,40 € = 0,80 €."
@@ -198,15 +211,15 @@
             {
                 type: "calculation",
                 topic: "Leiterwiderstand",
-                text: "Bei einer Wartung wird festgestellt, dass eine Leitung durch Überlastung geschädigt wurde. Was passiert mit dem Widerstand an einer verkohlten Kontaktstelle?",
+                text: "An einer Klemme entsteht durch einen losen Kontakt ein Übergangswiderstand. Was ist die Folge?",
                 options: [
-                    "Er sinkt fast auf Null.",
-                    "Er wird sehr hoch (Übergangswiderstand).",
-                    "Er bleibt bei 0,0178.",
-                    "Er stabilisiert die Spannung."
+                    "Die Leitung wird gekühlt.",
+                    "An der Stelle wird elektrische Energie in Wärme umgewandelt (Brandgefahr).",
+                    "Die Sicherung spart Strom.",
+                    "Die Spannung am Gerät erhöht sich."
                 ],
                 correct: 1,
-                explanation: "Schlechte Kontakte erzeugen hohe Übergangswiderstände. Dort fällt Spannung ab und erzeugt gefährliche Hitze (Brandgefahr)."
+                explanation: "Ein Widerstand an einer Kontaktstelle verursacht bei Stromfluss eine lokale Erwärmung (P = I² · Rü), was oft zu Schmorbränden führt."
             },
             {
                 type: "theory",
@@ -227,23 +240,48 @@
             {
                 type: "calculation",
                 topic: "Elektrowärme",
-                text: "Ein Speicher (m=100kg) soll um 50 K erwärmt werden. Wie viel Energie in kWh ist das ca.? (1 kWh = 3600 kJ, c=4,19 kJ/kgK)",
+                text: "Ein 100 Liter Speicher soll um 50 K erwärmt werden. Wie viel Energie in kWh wird dafür benötigt? (c = 1,16 Wh/kgK)",
                 options: ["1,2 kWh", "5,8 kWh", "10 kWh", "2,5 kWh"],
                 correct: 1,
-                explanation: "Q = 100 · 4,19 · 50 = 20950 kJ. Umrechnung: 20950 / 3600 ≈ 5,8 kWh."
+                explanation: "Rechnung: 100 kg · 1,16 Wh/kgK · 50 K = 5800 Wh = 5,8 kWh."
             }
         ];
 
         let currentQuestion = 0;
         let score = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let quizFinished = false;
 
         const getEl = (id) => document.getElementById(id);
 
+        function getIHKGrade(percent) {
+            if (percent >= 92) return { note: 1, label: "Sehr gut" };
+            if (percent >= 81) return { note: 2, label: "Gut" };
+            if (percent >= 67) return { note: 3, label: "Befriedigend" };
+            if (percent >= 50) return { note: 4, label: "Ausreichend" };
+            if (percent >= 30) return { note: 5, label: "Mangelhaft" };
+            return { note: 6, label: "Ungenügend" };
+        }
+
         function showQuestion() {
+            if (quizFinished) return;
+
             const q = questions[currentQuestion];
-            getEl('progress-bar').style.width = `${((currentQuestion) / questions.length) * 100}%`;
+            getEl('progress-bar').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
             getEl('question-counter').innerText = `Aufgabe ${currentQuestion + 1} von ${questions.length}`;
-            
+            getEl('nav-indicator').innerText = `${currentQuestion + 1} / ${questions.length}`;
+            getEl('btn-prev').disabled = currentQuestion === 0;
+            getEl('btn-next').disabled = currentQuestion === questions.length - 1;
+
+            const previousAnswer = userAnswers[currentQuestion];
+            if (previousAnswer !== null) {
+                renderAnswerFeedback(previousAnswer);
+            } else {
+                renderQuestionOptions(q);
+            }
+        }
+
+        function renderQuestionOptions(q) {
             getEl('question-area').innerHTML = `
                 <div class="mb-3">
                     <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded uppercase tracking-wider">${q.topic}</span>
@@ -259,65 +297,113 @@
                     `).join('')}
                 </div>
             `;
+            getEl('nav-controls').classList.remove('hidden');
         }
 
         window.checkAnswer = function(index) {
+            userAnswers[currentQuestion] = index;
+            score = userAnswers.reduce((total, ans, idx) => {
+                return ans === questions[idx].correct ? total + 1 : total;
+            }, 0);
+            getEl('score-display').innerText = `Punkte: ${score}`;
+            renderAnswerFeedback(index);
+        }
+
+        function renderAnswerFeedback(index) {
             const q = questions[currentQuestion];
             const isCorrect = index === q.correct;
 
-            if (isCorrect) score++;
-            getEl('score-display').innerText = `Punkte: ${score}`;
-
             getEl('question-area').innerHTML = `
-                <div class="text-center py-4 fade-in">
-                    <div class="mb-4">
-                        ${isCorrect 
-                            ? '<div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">✓</div>' 
-                            : '<div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">✕</div>'
-                        }
+                <div class="py-2 fade-in">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 ${isCorrect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} rounded-full flex items-center justify-center text-xl font-bold mr-3">
+                            ${isCorrect ? '✓' : '✕'}
+                        </div>
+                        <h3 class="text-xl font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}">
+                            ${isCorrect ? 'Richtig beantwortet' : 'Falsch beantwortet'}
+                        </h3>
                     </div>
-                    <h3 class="text-2xl font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'} mb-2">
-                        ${isCorrect ? 'Richtig!' : 'Leider falsch!'}
-                    </h3>
+                    
+                    <div class="mb-6 p-4 rounded-xl border-l-4 ${isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}">
+                        <p class="text-slate-500 text-xs uppercase font-bold mb-1">Deine Wahl:</p>
+                        <p class="text-slate-800 font-medium">${q.options[index]}</p>
+                    </div>
+
                     <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 text-left mb-6">
                         <p class="text-slate-600 font-bold mb-2">Erklärung für die SHK-Praxis:</p>
                         <p class="text-slate-800 leading-relaxed">${q.explanation}</p>
                     </div>
-                    <button onclick="nextQuestion()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg w-full sm:w-auto">
-                        ${currentQuestion < questions.length - 1 ? 'Nächste Aufgabe' : 'Zum Ergebnis'}
-                    </button>
+
+                    ${currentQuestion === questions.length - 1 ? 
+                        `<button onclick="finishQuiz()" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg w-full transform hover:-translate-y-1 active:translate-y-0">Prüfung jetzt abschließen & IHK-Note berechnen</button>` : 
+                        `<div class="text-center p-4 bg-slate-100 rounded-lg text-slate-500 text-sm font-medium">Navigiere mit "Vor" zur nächsten Aufgabe</div>`
+                    }
                 </div>
             `;
         }
 
         window.nextQuestion = function() {
-            currentQuestion++;
-            if (currentQuestion < questions.length) {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
                 showQuestion();
-            } else {
-                showResults();
             }
         }
 
-        function showResults() {
-            getEl('progress-bar').style.width = '100%';
+        window.prevQuestion = function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+
+        window.finishQuiz = function() {
+            quizFinished = true;
+            getEl('nav-controls').classList.add('hidden');
             const percent = Math.round((score / questions.length) * 100);
-            let feedback = "Noch etwas üben!";
-            if(percent >= 50) feedback = "Gute Basis!";
-            if(percent >= 80) feedback = "Hervorragend! Du bist bereit für die Praxis!";
+            const ihkResult = getIHKGrade(percent);
+
+            let gradeColor = "text-slate-800";
+            if (ihkResult.note <= 2) gradeColor = "text-green-600";
+            else if (ihkResult.note === 3) gradeColor = "text-blue-600";
+            else if (ihkResult.note === 4) gradeColor = "text-orange-600";
+            else gradeColor = "text-red-600";
 
             getEl('question-area').innerHTML = `
-                <div class="text-center py-8 fade-in">
-                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Prüfung beendet!</h2>
-                    <p class="text-slate-500 mb-8">${feedback}</p>
+                <div class="text-center py-4 fade-in">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-6">Prüfungsergebnis</h2>
                     
-                    <div class="inline-block p-8 bg-blue-50 rounded-3xl border-2 border-blue-100 mb-8">
-                        <span class="block text-5xl font-black text-blue-600 mb-1">${score} / ${questions.length}</span>
-                        <span class="text-blue-400 font-bold uppercase tracking-widest text-sm">Trefferquote: ${percent}%</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-100">
+                            <span class="block text-slate-500 text-sm font-bold uppercase mb-2">Erreichte Punkte</span>
+                            <span class="text-4xl font-black text-blue-600">${score} / ${questions.length}</span>
+                            <span class="block text-blue-400 font-bold mt-1">${percent}% Erfolgsquote</span>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-2xl border-2 border-slate-100 shadow-sm">
+                            <span class="block text-slate-500 text-sm font-bold uppercase mb-2">IHK-Bewertung</span>
+                            <span class="text-4xl font-black ${gradeColor}">Note ${ihkResult.note}</span>
+                            <span class="block font-bold mt-1 ${gradeColor}">${ihkResult.label}</span>
+                        </div>
                     </div>
 
-                    <button onclick="location.reload()" class="block w-full sm:w-auto mx-auto bg-slate-800 text-white px-10 py-4 rounded-2xl font-bold hover:bg-slate-900 transition-colors shadow-xl">
-                        Trainer neu starten
+                    <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 text-left mb-8">
+                        <h4 class="font-bold text-slate-800 mb-3 text-center border-bottom pb-2">IHK-Notenschlüssel (Anhaltspunkt)</h4>
+                        <div class="grid grid-cols-2 gap-2 text-xs font-medium text-slate-600">
+                            <div class="flex justify-between border-r pr-4"><span>100% - 92%</span> <span>Note 1</span></div>
+                            <div class="flex justify-between pl-4"><span>91% - 81%</span> <span>Note 2</span></div>
+                            <div class="flex justify-between border-r pr-4"><span>80% - 67%</span> <span>Note 3</span></div>
+                            <div class="flex justify-between pl-4"><span>66% - 50%</span> <span>Note 4</span></div>
+                            <div class="flex justify-between border-r pr-4"><span>49% - 30%</span> <span>Note 5</span></div>
+                            <div class="flex justify-between pl-4"><span>< 30%</span> <span>Note 6</span></div>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-500 mb-8 italic">
+                        ${ihkResult.note <= 4 ? "Herzlichen Glückwunsch! Du hast die Prüfung bestanden." : "Leider hat es diesmal nicht gereicht. Schau dir die Erklärungen noch einmal an."}
+                    </p>
+
+                    <button onclick="location.reload()" class="w-full bg-slate-800 text-white px-10 py-4 rounded-2xl font-bold hover:bg-slate-900 transition-all shadow-xl transform hover:-translate-y-1">
+                        Prüfung wiederholen
                     </button>
                 </div>
             `;
