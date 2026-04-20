@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elektrotechnik Lern-Trainer SHK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #question-area { min-height: 200px; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8">
+    <div id="app" class="max-w-3xl mx-auto">
+        <header class="bg-white rounded-2xl shadow-sm p-6 mb-8 border border-slate-200">
+            <h1 class="text-2xl font-bold text-slate-800">ET-Trainer für SHK-Berufe</h1>
+            <p class="text-slate-500 mt-1">Leistung, Energie, Leiterwiderstand & Trinkwassererwärmung</p>
+            <div id="progress-bar-container" class="mt-4 bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-blue-600 h-full w-0 transition-all duration-500"></div>
+            </div>
+        </header>
+
+        <div id="quiz-container" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-slate-200 min-h-[400px]">
+            <div id="question-area" class="fade-in">
+                <p class="text-slate-500">Lade Lerninhalte...</p>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-between items-center text-sm text-slate-500 font-medium px-2">
+            <span id="question-counter">Frage 1 von 20</span>
+            <span id="score-display">Punkte: 0</span>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                type: "calculation",
+                topic: "Leistung",
+                text: "Eine hocheffiziente Heizungsumwälzpumpe nimmt bei 230 V einen Strom von 0,2 A auf. Wie hoch ist die elektrische Leistungsaufnahme P?",
+                options: ["23 W", "46 W", "1150 W", "11,5 W"],
+                correct: 1,
+                explanation: "Formel: P = U · I. Rechnung: 230 V · 0,2 A = 46 W."
+            },
+            {
+                type: "theory",
+                topic: "Energie",
+                text: "Ein Kunde möchte wissen, wie die elektrische Arbeit (W) abgerechnet wird. Welcher Zusammenhang ist korrekt?",
+                options: [
+                    "W = P / t (Leistung durch Zeit)",
+                    "W = P · t (Leistung mal Zeit)",
+                    "W = U / I (Spannung durch Strom)",
+                    "W = P · η (Leistung mal Wirkungsgrad)"
+                ],
+                correct: 1,
+                explanation: "Elektrische Arbeit ist das Produkt aus Leistung und der Zeitdauer, in der das Gerät (z.B. eine Therme) läuft."
+            },
+            {
+                type: "calculation",
+                topic: "Energie",
+                text: "Eine kleine Zirkulationspumpe (20 W) läuft im Dauerbetrieb 24 Stunden am Tag. Wie viel Energie in Wh verbraucht sie täglich?",
+                options: ["480 Wh", "20 Wh", "0,83 Wh", "240 Wh"],
+                correct: 0,
+                explanation: "Rechnung: 20 W · 24 h = 480 Wh (entspricht 0,48 kWh)."
+            },
+            {
+                type: "calculation",
+                topic: "Leistung",
+                text: "Ein elektrischer Heizstab für einen Trinkwasserspeicher hat einen Widerstand von 26,45 Ω und wird an 230 V betrieben. Welche Leistung P hat der Heizstab?",
+                options: ["1000 W", "2000 W", "3000 W", "1500 W"],
+                correct: 1,
+                explanation: "Formel: P = U² / R. Rechnung: (230 V)² / 26,45 Ω = 52900 / 26,45 ≈ 2000 W (2 kW)."
+            },
+            {
+                type: "theory",
+                topic: "Leistung",
+                text: "In einer Kundenanlage wird die Spannung von 230 V auf 400 V (Drehstrom-Anschluss für Durchlauferhitzer) erhöht. Welchen Einfluss hat die Spannung bei gleichem Widerstand auf die Leistung?",
+                options: [
+                    "Die Leistung bleibt gleich.",
+                    "Die Leistung steigt linear mit der Spannung.",
+                    "Die Leistung steigt quadratisch mit der Spannung (P ~ U²).",
+                    "Die Leistung sinkt."
+                ],
+                correct: 2,
+                explanation: "Die Spannung geht quadratisch in die Leistungsformel ein. Höhere Spannung bedeutet bei gleichem Widerstand deutlich mehr Hitzeleistung."
+            },
+            {
+                type: "calculation",
+                topic: "Leiterwiderstand",
+                text: "Eine Rohr-Begleitheizung wird mit einer 40m langen Kupferleitung (ρ = 0,0178 Ω·mm²/m) angeschlossen. Der Querschnitt beträgt 1,5 mm². Berechne den Leitungswiderstand.",
+                options: ["0,237 Ω", "0,475 Ω", "1,068 Ω", "0,712 Ω"],
+                correct: 1,
+                explanation: "Formel: R = ρ · (l / A). Rechnung: 0,0178 · (40 / 1,5) = 0,475 Ω."
+            },
+            {
+                type: "theory",
+                topic: "Leiterwiderstand",
+                text: "Warum müssen Zuleitungen für große Durchlauferhitzer (z.B. 21 kW) einen größeren Querschnitt haben als für eine Umwälzpumpe?",
+                options: [
+                    "Damit der Draht mechanisch stabiler ist.",
+                    "Um den Leiterwiderstand und damit die Wärmeentwicklung im Kabel gering zu halten.",
+                    "Damit die Elektronen schneller fließen können.",
+                    "Damit die Isolierung nicht schmilzt."
+                ],
+                correct: 1,
+                explanation: "Große Leistungen erfordern hohe Ströme. Ein größerer Querschnitt senkt den Widerstand R und verhindert gefährliche Erhitzung der Leitung."
+            },
+            {
+                type: "calculation",
+                topic: "Leiterwiderstand",
+                text: "Ein Monteur misst an einer 100m langen Rolle NYM-J Leitung (Aluminium, ρ = 0,028) einen Widerstand von 1,12 Ω. Welchen Querschnitt hat die Ader?",
+                options: ["1,5 mm²", "2,5 mm²", "4,0 mm²", "6,0 mm²"],
+                correct: 1,
+                explanation: "Formel: A = (ρ · l) / R. Rechnung: (0,028 · 100) / 1,12 = 2,5 mm²."
+            },
+            {
+                type: "calculation",
+                topic: "Elektrowärme",
+                text: "Ein Elektro-Warmwasserspeicher mit 2000 W ist 1 Stunde lang aufgeheizt worden. Wie viel Wärmemenge Q in kJ hat er abgegeben (η = 100%)?",
+                options: ["2000 kJ", "3600 kJ", "7200 kJ", "120 kJ"],
+                correct: 2,
+                explanation: "Formel: Q = P · t. t = 3600 s. Rechnung: 2000 W · 3600 s = 7.200.000 J = 7200 kJ."
+            },
+            {
+                type: "theory",
+                topic: "Elektrowärme",
+                text: "Was bedeutet die 'Spezifische Wärmekapazität von Wasser' (c = 4,187 kJ/(kg·K)) für die SHK-Praxis?",
+                options: [
+                    "Dass Wasser 4,187 kJ benötigt, um 1 Liter um 1 Grad zu erwärmen.",
+                    "Den Siedepunkt von Wasser bei Normaldruck.",
+                    "Den Druckverlust in der Leitung.",
+                    "Die Stromleitfähigkeit von Trinkwasser."
+                ],
+                correct: 0,
+                explanation: "Dieser Wert gibt an, wie viel Energie (Wärmemenge) man aufwenden muss, um die Temperatur des Wassers zu erhöhen."
+            },
+            {
+                type: "calculation",
+                topic: "Elektrowärme",
+                text: "Wie viel Wärmemenge Q wird benötigt, um 10 kg (10 Liter) Wasser von 10°C auf 50°C zu erwärmen? (c = 4,187 kJ/(kg·K))",
+                options: ["167,48 kJ", "1674,8 kJ", "418,7 kJ", "1000 kJ"],
+                correct: 1,
+                explanation: "Δϑ = 40 K (Unterschied). Rechnung: 10 kg · 4,187 · 40 K = 1674,8 kJ."
+            },
+            {
+                type: "calculation",
+                topic: "Mischaufgabe",
+                text: "Ein Heizlüfter im Baustellenwagen hat 2300 W und läuft an 230 V. Wie hoch muss die Absicherung mindestens sein?",
+                options: ["6 A", "10 A", "16 A", "20 A"],
+                correct: 1,
+                explanation: "I = P / U. Rechnung: 2300 W / 230 V = 10 A. Eine 10A Sicherung reicht gerade so, üblich sind 16A."
+            },
+            {
+                type: "theory",
+                topic: "Leiterwiderstand",
+                text: "Welchen Einfluss hat die Temperatur auf den Widerstand einer Kupferleitung?",
+                options: [
+                    "Keinen Einfluss.",
+                    "Der Widerstand sinkt bei Erwärmung.",
+                    "Der Widerstand steigt bei Erwärmung (Kaltleiter-Verhalten).",
+                    "Das Kupfer wird zum Isolator."
+                ],
+                correct: 2,
+                explanation: "Metalle wie Kupfer leiten bei Hitze schlechter (Widerstand steigt), da die Atome stärker schwingen und den Elektronenfluss behindern."
+            },
+            {
+                type: "calculation",
+                topic: "Leistung",
+                text: "Eine Wärmepumpe hat eine Leistungsaufnahme von 3 kW. Wie viel Strom I fließt bei 400 V (vereinfacht als einphasige Last gerechnet)?",
+                options: ["7,5 A", "13 A", "1,2 A", "12 A"],
+                correct: 0,
+                explanation: "I = P / U. Rechnung: 3000 W / 400 V = 7,5 A."
+            },
+            {
+                type: "theory",
+                topic: "Elektrowärme",
+                text: "Was passiert in einem geschlossenen Warmwasserspeicher, wenn das Sicherheitsventil defekt ist und der Thermostat nicht abschaltet?",
+                options: [
+                    "Nichts, der Speicher ist stabil.",
+                    "Die elektrische Sicherung löst immer aus.",
+                    "Der Druck steigt durch Volumenausdehnung gefährlich an (Explosionsgefahr).",
+                    "Das Wasser wird zu Dampf und verschwindet."
+                ],
+                correct: 2,
+                explanation: "Die elektrische Energie wird ununterbrochen in Wärme umgewandelt. Ohne Druckausgleich (Ventil) steigt der Druck massiv an."
+            },
+            {
+                type: "calculation",
+                topic: "Arbeit",
+                text: "Ein elektrischer Handtuchheizkörper hat 500 W. Er läuft 4 Stunden am Tag. Wie viel kostet der Betrieb pro Tag bei 0,40 €/kWh?",
+                options: ["0,20 €", "0,80 €", "2,00 €", "1,20 €"],
+                correct: 1,
+                explanation: "1. Arbeit: 0,5 kW · 4 h = 2 kWh. 2. Kosten: 2 kWh · 0,40 € = 0,80 €."
+            },
+            {
+                type: "calculation",
+                topic: "Leiterwiderstand",
+                text: "Bei einer Wartung wird festgestellt, dass eine Leitung durch Überlastung geschädigt wurde. Was passiert mit dem Widerstand an einer verkohlten Kontaktstelle?",
+                options: [
+                    "Er sinkt fast auf Null.",
+                    "Er wird sehr hoch (Übergangswiderstand).",
+                    "Er bleibt bei 0,0178.",
+                    "Er stabilisiert die Spannung."
+                ],
+                correct: 1,
+                explanation: "Schlechte Kontakte erzeugen hohe Übergangswiderstände. Dort fällt Spannung ab und erzeugt gefährliche Hitze (Brandgefahr)."
+            },
+            {
+                type: "theory",
+                topic: "Leistung",
+                text: "Ein Lüftungsmotor hat Pab = 400 W und Pzu = 500 W. Wie groß ist der Wirkungsgrad η?",
+                options: ["125%", "80%", "90%", "20%"],
+                correct: 1,
+                explanation: "η = Pab / Pzu. Rechnung: 400 / 500 = 0,80 = 80%."
+            },
+            {
+                type: "calculation",
+                topic: "Mischaufgabe",
+                text: "Ein Kleindurchlauferhitzer zieht 15,2 A bei 230 V. Wie hoch ist seine Leistung?",
+                options: ["2,5 kW", "3,5 kW", "5,0 kW", "1,5 kW"],
+                correct: 1,
+                explanation: "P = U · I. Rechnung: 230 V · 15,2 A = 3496 W ≈ 3,5 kW."
+            },
+            {
+                type: "calculation",
+                topic: "Elektrowärme",
+                text: "Ein Speicher (m=100kg) soll um 50 K erwärmt werden. Wie viel Energie in kWh ist das ca.? (1 kWh = 3600 kJ, c=4,19 kJ/kgK)",
+                options: ["1,2 kWh", "5,8 kWh", "10 kWh", "2,5 kWh"],
+                correct: 1,
+                explanation: "Q = 100 · 4,19 · 50 = 20950 kJ. Umrechnung: 20950 / 3600 ≈ 5,8 kWh."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        const getEl = (id) => document.getElementById(id);
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            getEl('progress-bar').style.width = `${((currentQuestion) / questions.length) * 100}%`;
+            getEl('question-counter').innerText = `Aufgabe ${currentQuestion + 1} von ${questions.length}`;
+            
+            getEl('question-area').innerHTML = `
+                <div class="mb-3">
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded uppercase tracking-wider">${q.topic}</span>
+                    <span class="ml-2 text-xs text-slate-400 font-medium">${q.type === 'calculation' ? 'Rechenaufgabe' : 'Fachwissen'}</span>
+                </div>
+                <h2 class="text-xl font-semibold text-slate-800 mb-6 leading-snug">${q.text}</h2>
+                <div class="grid grid-cols-1 gap-3">
+                    ${q.options.map((opt, i) => `
+                        <button onclick="checkAnswer(${i})" class="w-full text-left p-4 rounded-xl border-2 border-slate-100 hover:border-blue-600 hover:bg-blue-50 transition-all duration-200 group flex items-center bg-white shadow-sm">
+                            <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center mr-4 group-hover:bg-blue-600 group-hover:text-white font-bold text-slate-500 transition-colors">${String.fromCharCode(65 + i)}</span>
+                            <span class="text-slate-700 font-medium">${opt}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        window.checkAnswer = function(index) {
+            const q = questions[currentQuestion];
+            const isCorrect = index === q.correct;
+
+            if (isCorrect) score++;
+            getEl('score-display').innerText = `Punkte: ${score}`;
+
+            getEl('question-area').innerHTML = `
+                <div class="text-center py-4 fade-in">
+                    <div class="mb-4">
+                        ${isCorrect 
+                            ? '<div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">✓</div>' 
+                            : '<div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">✕</div>'
+                        }
+                    </div>
+                    <h3 class="text-2xl font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'} mb-2">
+                        ${isCorrect ? 'Richtig!' : 'Leider falsch!'}
+                    </h3>
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 text-left mb-6">
+                        <p class="text-slate-600 font-bold mb-2">Erklärung für die SHK-Praxis:</p>
+                        <p class="text-slate-800 leading-relaxed">${q.explanation}</p>
+                    </div>
+                    <button onclick="nextQuestion()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg w-full sm:w-auto">
+                        ${currentQuestion < questions.length - 1 ? 'Nächste Aufgabe' : 'Zum Ergebnis'}
+                    </button>
+                </div>
+            `;
+        }
+
+        window.nextQuestion = function() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            getEl('progress-bar').style.width = '100%';
+            const percent = Math.round((score / questions.length) * 100);
+            let feedback = "Noch etwas üben!";
+            if(percent >= 50) feedback = "Gute Basis!";
+            if(percent >= 80) feedback = "Hervorragend! Du bist bereit für die Praxis!";
+
+            getEl('question-area').innerHTML = `
+                <div class="text-center py-8 fade-in">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Prüfung beendet!</h2>
+                    <p class="text-slate-500 mb-8">${feedback}</p>
+                    
+                    <div class="inline-block p-8 bg-blue-50 rounded-3xl border-2 border-blue-100 mb-8">
+                        <span class="block text-5xl font-black text-blue-600 mb-1">${score} / ${questions.length}</span>
+                        <span class="text-blue-400 font-bold uppercase tracking-widest text-sm">Trefferquote: ${percent}%</span>
+                    </div>
+
+                    <button onclick="location.reload()" class="block w-full sm:w-auto mx-auto bg-slate-800 text-white px-10 py-4 rounded-2xl font-bold hover:bg-slate-900 transition-colors shadow-xl">
+                        Trainer neu starten
+                    </button>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', showQuestion);
+    </script>
+</body>
+</html>
